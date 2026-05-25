@@ -2,6 +2,7 @@ const people = [];
 const options = [];
 let currentPlayer = null;
 loadSavedData();
+let lastTickAngle = 0;
 
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
@@ -287,6 +288,7 @@ function spinWheel() {
   }
 
   spinning = true;
+  lastTickAngle = 0;
 
   document.getElementById('winnerText').textContent = '';
 
@@ -318,6 +320,21 @@ function spinWheel() {
     currentRotation =
       startRotation +
       ((targetRotation - startRotation) * eased);
+	  
+	// detect slice crossing
+	const visible = visibleOptions();
+	const totalSlices = visible.length;
+
+	const fullCircle = Math.PI * 2;
+
+	const sliceSize = fullCircle / Math.max(totalSlices, 1);
+
+	const angle = currentRotation % fullCircle;
+
+	if (Math.abs(angle - lastTickAngle) >= sliceSize) {
+	  playTick();
+	  lastTickAngle = angle;
+	}
 
     drawWheel(currentRotation);
 
@@ -520,6 +537,29 @@ function renderPlayerDropdown() {
   if (currentPlayer && people.includes(currentPlayer)) {
     select.value = currentPlayer;
   }
+}
+
+function playTick() {
+  const AudioContext =
+    window.AudioContext || window.webkitAudioContext;
+
+  const audioCtx = new AudioContext();
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = 'square';
+  osc.frequency.value = 1200;
+
+  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.06);
 }
 
 drawWheel();
