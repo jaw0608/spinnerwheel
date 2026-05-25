@@ -2,7 +2,21 @@ const people = [];
 const options = [];
 let currentPlayer = null;
 loadSavedData();
-let lastTickAngle = 0;
+
+
+let audioCtx = null;
+let lastTickRotation = 0;
+const tickThreshold = 0.25; // radians (~14 degrees)
+
+function ensureAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
 
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
@@ -288,7 +302,7 @@ function spinWheel() {
   }
 
   spinning = true;
-  lastTickAngle = 0;
+  lastTickRotation = currentRotation;
 
   document.getElementById('winnerText').textContent = '';
 
@@ -321,20 +335,14 @@ function spinWheel() {
       startRotation +
       ((targetRotation - startRotation) * eased);
 	  
-	// detect slice crossing
-	const visible = visibleOptions();
-	const totalSlices = visible.length;
+	// tick noise
+	const delta = Math.abs(currentRotation - lastTickRotation);
 
-	const fullCircle = Math.PI * 2;
-
-	const sliceSize = fullCircle / Math.max(totalSlices, 1);
-
-	const angle = currentRotation % fullCircle;
-
-	if (Math.abs(angle - lastTickAngle) >= sliceSize) {
+	if (delta > tickThreshold) {
 	  playTick();
-	  lastTickAngle = angle;
+	  lastTickRotation = currentRotation;
 	}
+	//end tick noise
 
     drawWheel(currentRotation);
 
@@ -540,26 +548,23 @@ function renderPlayerDropdown() {
 }
 
 function playTick() {
-  const AudioContext =
-    window.AudioContext || window.webkitAudioContext;
-
-  const audioCtx = new AudioContext();
+  ensureAudio();
+  if (!audioCtx) return;
 
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
 
   osc.type = 'square';
-  osc.frequency.value = 1200;
+  osc.frequency.value = 1000;
 
-  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+  gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.06);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + 0.09);
 }
 
 drawWheel();
