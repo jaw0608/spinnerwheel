@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Spinner Wheel</title>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>🎯 Spinner Wheel</h1>
+
+  <div class="container">
+    <div class="panel left-panel">
+      <h2>Players</h2>
+
+      <div class="input-row">
+        <input id="personInput" type="text" placeholder="Enter player name" maxlength="30" />
+        <button class="primary-btn" onclick="addPerson()">Add Player</button>
+      </div>
+
+      <div class="small-text">0-5 players supported.</div>
+
+      <div id="peopleList" class="people-list"></div>
+
+      <hr style="margin: 24px 0; border-color: #374151;" />
+
+      <h2>Wheel Options</h2>
+
+      <div class="input-row">
+        <input id="optionInput" type="text" placeholder="Option name" maxlength="50" />
+
+        <select id="weightInput">
+          <option value="1">Weight 1</option>
+          <option value="2">Weight 2</option>
+          <option value="3">Weight 3</option>
+          <option value="4">Weight 4</option>
+          <option value="5" selected>Weight 5</option>
+          <option value="6">Weight 6</option>
+          <option value="7">Weight 7</option>
+          <option value="8">Weight 8</option>
+          <option value="9">Weight 9</option>
+          <option value="10">Weight 10</option>
+        </select>
+      </div>
+
+      <div id="playerCheckboxes" class="checkbox-row"></div>
+
+      <div style="margin-top: 12px;">
+        <button class="primary-btn" onclick="addOption()">Add Option</button>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <h3>Current Options</h3>
+        <div id="optionList"></div>
+      </div>
+    </div>
+
+    <div class="panel right-panel">
+      <div class="wheel-wrapper">
+        <div class="pointer"></div>
+        <canvas id="wheelCanvas" width="500" height="500"></canvas>
+      </div>
+	  <div style="margin: 10px 0;">
+  <label style="display:block; margin-bottom:6px; color:#e5e7eb;">
+    Current Spinner
+  </label>
+
+  <select id="currentPlayerSelect" onchange="setCurrentPlayer(this.value)">
+    <option value="">Select player</option>
+  </select>
+</div>
+
+      <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <button class="primary-btn" onclick="spinWheel()">SPIN</button>
+		<button class="danger-btn" onclick="resetWheel()">
+			Reset Wheel
+		</button>
+      </div>
+
+      <div class="result-box">
+        <div id="winnerText" class="winner"></div>
+        <div id="winnerActions"></div>
+      </div>
+    </div>
+  </div>
+  
+
+  <script src="index.js"></script>
+</body>
+</html>
