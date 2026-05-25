@@ -340,29 +340,32 @@ function determineWinner() {
     0
   );
 
-  const normalized =
-    (
-      (Math.PI * 2) -
-      (currentRotation % (Math.PI * 2))
-    ) % (Math.PI * 2);
+  const fullCircle = Math.PI * 2;
+
+  // 🔥 KEY FIX: pointer is at TOP (-90°)
+  const pointerAngle = -Math.PI / 2;
+
+  // normalize rotation into 0..2π
+  const normalizedRotation =
+    ((currentRotation % fullCircle) + fullCircle) % fullCircle;
+
+  // where the pointer is pointing in wheel space
+  const pointer = (fullCircle - normalizedRotation + pointerAngle + fullCircle) % fullCircle;
 
   let current = 0;
 
   for (const option of visible) {
-    const slice =
-      (option.weight / totalWeight) *
-      Math.PI * 2;
+    const slice = (option.weight / totalWeight) * fullCircle;
 
-    if (
-      normalized >= current &&
-      normalized < current + slice
-    ) {
+    if (pointer >= current && pointer < current + slice) {
       showWinner(option);
       return;
     }
 
     current += slice;
   }
+
+  showWinner(visible[0]);
 }
 
 function showWinner(option) {
