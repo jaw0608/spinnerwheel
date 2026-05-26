@@ -31,11 +31,11 @@
         <input id="optionInput" type="text" placeholder="Option name" maxlength="50" />
 
         <select id="weightInput">
-          <option value="1">Weight 1</option>
+          <option value="1" selected >Weight 1</option>
           <option value="2">Weight 2</option>
           <option value="3">Weight 3</option>
           <option value="4">Weight 4</option>
-          <option value="5" selected>Weight 5</option>
+          <option value="5">Weight 5</option>
           <option value="6">Weight 6</option>
           <option value="7">Weight 7</option>
           <option value="8">Weight 8</option>
@@ -52,12 +52,12 @@
 
       <div style="margin-top: 24px;">
         <h3>Current Options</h3>
-        <div id="optionList"></div>
+        <div id="optionList" class="option-list"></div>
       </div>
     </div>
 
     <div class="panel right-panel">
-      <div class="wheel-wrapper">
+      <div class="wheel-wrapper" onclick="spinWheel()">
         <div class="pointer"></div>
         <canvas id="wheelCanvas" width="500" height="500"></canvas>
       </div>
