@@ -183,3 +183,8 @@ canvas {
   50% { background: white; }
   100% { background: #0b1220; }
 }
+.option-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
