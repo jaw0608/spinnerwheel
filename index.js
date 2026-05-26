@@ -166,27 +166,69 @@ function renderOptions() {
     }
 
     div.innerHTML = `
-      <strong>${option.name}</strong><br>
-      Weight: ${option.weight}<br>
-      Players:
-      ${
-        option.allowedPlayers.length
-          ? option.allowedPlayers.join(', ')
-          : 'Everyone'
-      }
+      <input
+        type="text"
+        value="${option.name}"
+        oninput="updateOptionName(${index}, this.value)"
+        style="width:100%; margin-bottom:8px;"
+      />
 
-      <br><br>
+      <div style="margin-bottom:8px;">
+        Weight:
+        <input
+          type="number"
+          min="1"
+          max="10"
+          value="${option.weight}"
+          oninput="updateOptionWeight(${index}, this.value)"
+          style="width:80px;"
+        />
+      </div>
 
-      <button
-        class="danger-btn"
-        onclick="removeOption(${index})"
-      >
-        Delete
-      </button>
+      <div style="margin-bottom:10px;">
+        ${people.map(person => `
+          <label style="margin-right:8px;">
+            <input
+              type="checkbox"
+              ${
+                option.allowedPlayers.includes(person)
+                  ? 'checked'
+                  : ''
+              }
+              onchange="togglePlayerForOption(${index}, '${person}')"
+            />
+            ${person}
+          </label>
+        `).join('')}
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button
+          class="danger-btn"
+          onclick="removeOption(${index})"
+        >
+          Delete
+        </button>
+      </div>
     `;
 
     container.appendChild(div);
   });
+}
+
+function updateOptionName(index, value) {
+  options[index].name = value;
+
+  saveData();
+  drawWheel();
+}
+
+function updateOptionWeight(index, value) {
+  options[index].weight =
+    parseInt(value) || 1;
+
+  saveData();
+  drawWheel();
 }
 
 function visibleOptions() {
